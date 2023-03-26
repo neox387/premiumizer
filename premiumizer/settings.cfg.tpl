@@ -102,5 +102,5 @@ apprise_url =
 updated = 1
 auto_update = 0
 update_date = Never
-config_version = 2.9
-req_version = 11.0
+config_version = 1.0
+req_version = 1.0
