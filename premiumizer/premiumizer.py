@@ -870,7 +870,7 @@ class User(UserMixin):
 
 
 def to_unicode(original, *args):
-    logger.debug('def to_unicode started')
+    #logger.debug('def to_unicode started')
     try:
         if isinstance(original, str):
             return original
@@ -907,7 +907,7 @@ def ek(original, *args):
 
 #
 def clean_name(original):
-    logger.debug('def clean_name started')
+    #logger.debug('def clean_name started')
     valid_chars = "#$+;=^`~'-_.,()[]{}&!@ %s%s" % (ascii_letters, digits)
     cleaned_filename = unicodedata.normalize('NFKD', to_unicode(original)).encode('ASCII', 'ignore').decode('utf8')
     valid_string = ''.join(c for c in cleaned_filename if c in valid_chars)
@@ -1038,7 +1038,7 @@ def send_notification(subject, text=None, send_email=cfg.email_enabled, send_pus
             logger.error('Could not send via Apprise: %s' % err)
 
 
-def jd_query_packages(id=None):
+def jd_query_packages():
     count = 0
     global jd_packages
     if client_connected:
@@ -1056,7 +1056,7 @@ def jd_query_packages(id=None):
             except:
                 response = None
                 logger.error('myjdapi : ' + str(e))
-        while not response:
+        while not len(response):
             gevent.sleep(5)
             if not jd_packages['time'] < (datetime.now() - timedelta(seconds=seconds)):
                 response = jd_packages['packages']
@@ -1069,46 +1069,33 @@ def jd_query_packages(id=None):
             if count == 20:
                 logger.error('JD did not return package status for: %s', greenlet.task.name)
                 return False
-        while not len(response):
-            gevent.sleep(5)
-            if not jd_packages['time'] < (datetime.now() - timedelta(seconds=seconds)):
-                response = jd_packages['packages']
-            else:
-                try:
-                    response = cfg.jd_device.downloads.query_packages()
-                except BaseException as e:
-                    logger.error('myjdapi : ' + str(e))
-            count += 1
-            if count == 12:
-                logger.error('Could not find package in JD for: %s', greenlet.task.name)
-                return False
 
         jd_packages['packages'] = response
 
-    if id:
-        for package in jd_packages['packages']:
-            try:
-                if id == str(package['uuid']):
-                    while 'status' not in package:
-                        try:
-                            package = package[0]
-                            if 'status' in package:
-                                break
-                        except:
-                            pass
-                        gevent.sleep(5)
-                        try:
-                            package = cfg.jd_device.downloads.query_packages([{"packageUUIDs": [id]}])
-                        except BaseException as e:
-                            logger.error('myjdapi : ' + str(e))
-                        count += 1
-                        if count == 24:
-                            package = {'status': 'Failed'}
-                            logger.error('JD did not return package status for: %s', greenlet.task.name)
-                    return package
-            except:
-                return False
-
+#    if id:
+#        for package in jd_packages['packages']:
+#            try:
+#                if id == str(package['uuid']):
+#                    while 'status' not in package:
+#                        try:
+#                           package = package[0]
+#                            if 'status' in package:
+#                                break
+#                        except:
+#                           pass
+#                       gevent.sleep(5)
+#                       try:
+#                           response = cfg.jd_device.downloads.query_packages(param)
+#                        except BaseException as e:
+#                            logger.error('myjdapi : ' + str(e))
+#                        count += 1
+#                        if count == 24:
+#                            package = {'status': 'Failed'}
+#                            logger.error('JD did not return package status for: %s', greenlet.task.name)
+#                    return package
+#            except:
+#                return False
+#
     return jd_packages['packages']
 
 
@@ -1125,13 +1112,14 @@ def get_download_stats_jd(package_name, package_ids):
     task_total_progress = 0
     task_total_bytesloaded = 0
     task_total_bytestotal = 0
-    gevent.sleep(10)
-    query_packages = jd_query_packages(package_ids)
+    final_query_packages = []
+    gevent.sleep(20)
+    query_packages = jd_query_packages()
     if not query_packages:
         return 1
     while not any(package['name'] in package_name for package in query_packages):
         gevent.sleep(5)
-        query_packages = jd_query_packages(package_ids)
+        query_packages = jd_query_packages()
         count += 1
         if count == 10:
             logger.error('Could not find package in JD for: %s', greenlet.task.name)
@@ -1139,6 +1127,13 @@ def get_download_stats_jd(package_name, package_ids):
     start_time = time.time()
 
     while not task_total_progress == 100:
+        final_query_packages = []
+        for package in query_packages:
+            if package['name'] in package_name:
+                if str(package['uuid']) not in package_ids:
+                    package_ids.append(str(package['uuid']))
+                final_query_packages.append(package)
+        query_packages = final_query_packages
         task_total_speed = 0
         task_total_progress = 0
         task_total_bytesloaded = 0
@@ -1261,18 +1256,16 @@ def get_download_stats_jd(package_name, package_ids):
                     total_progress.append(tmp_total_progress)
                     total_bytesloaded.append(package['bytesLoaded'])
                     total_bytestotal.append(bytestotal)
-            try:
-                while 'Extracting' in package['status']:
-                    try:
-                        eta = package['status'].split('ETA: ', 1)[1].split(')', 1)[0]
-                    except:
-                        eta = ''
-                    greenlet.task.update(speed=" ", progress=99, eta=' Extracting ' + eta)
-                    gevent_sleep_time()
-            except:
-                pass
+            while 'Extracting' in package['status']:
+                try:
+                    eta = package['status'].split('ETA: ', 1)[1].split(')', 1)[0]
+                except:
+                    eta = ''
+                greenlet.task.update(speed=" ", progress=99, eta=' Extracting ' + eta)
+                gevent_sleep_time()
+
         gevent_sleep_time()
-        query_packages = jd_query_packages(package_ids)
+        query_packages = jd_query_packages()
 
     stop_time = time.time()
     dltime = int(stop_time - start_time)
@@ -1414,6 +1407,7 @@ def download_file():
                         if any(link['name'] == download['name'] for link in query_links):
                             download['download_ok'] = False
                             continue
+
             elif cfg.aria2_enabled:
                 if cfg.aria2_connected:
                     transfers = cfg.aria.aria2.tellActive(cfg.aria2_token) + cfg.aria.aria2.tellWaiting(cfg.aria2_token,
@@ -1487,9 +1481,10 @@ def download_file():
                           "packageName": package_name,
                           "destinationFolder": (download['path']),
                           "overwritePackagizerRules": True}])
-                    package_ids.append(jd_jobid['id'])
+#                   package_ids.append(str(jd_jobid['id']))
                 except BaseException as e:
                     logger.error('myjdapi error: ' + str(e))
+
             returncode = get_download_stats_jd(package_name, package_ids)
 
     return returncode
@@ -1526,7 +1521,7 @@ def process_dir(dir_content, path):
             process_dir(subdir_content, subdir_path)
         elif type == 'file':
             if greenlet.task.dlext_blacklist:
-                if greenlet.task.dlext[0] == '' or not x['link'].lower().endswith(tuple(greenlet.task.dlext)):
+                if greenlet.task.dlext[0] == '' or x['link'].lower().endswith(tuple(greenlet.task.dlext)):
                     download_file_continue = 1
                 else:
                     logger.debug('Skipping download of file %s because extension is blacklisted', x['name'])
@@ -1729,7 +1724,7 @@ def update():
 
 
 def parse_tasks(transfers):
-    logger.debug('def parse_task started')
+    #logger.debug('def parse_task started')
     id_online = []
     id_local = []
     idle = True
@@ -1935,7 +1930,7 @@ def check_downloads(dlsize, id, name):
 
 
 def get_task(id, name=None):
-    logger.debug('def get_task started')
+    #logger.debug('def get_task started')
     for task in tasks:
         if task.id == id:
             return task
