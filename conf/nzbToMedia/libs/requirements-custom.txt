@@ -1,0 +1,2 @@
+deluge_client
+utorrent

@@ -402,8 +402,8 @@ class PremConfig:
 
         else:
             self.download_builtin = 1
-        if os.path.isfile(os.path.join(rootdir, 'nzbtomedia', 'NzbToMedia.py')):
-            self.nzbtomedia_location = (os.path.join(rootdir, 'nzbtomedia', 'NzbToMedia.py'))
+        if os.path.isfile(os.path.join(rootdir, 'conf', 'nzbToMedia', 'NzbToMedia.py')):
+            self.nzbtomedia_location = (os.path.join(rootdir, 'conf', 'nzbtomedia', 'NzbToMedia.py'))
             prem_config.set('downloads', 'nzbtomedia_location', self.nzbtomedia_location)
             with open(os.path.join(ConfDir, 'settings.cfg'), 'w') as configfile:
                 prem_config.write(configfile)

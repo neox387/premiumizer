@@ -1,5 +1,9 @@
 #Premiumizer Specific
-conf/
+conf/logs
+conf/database.db.bak
+conf/database.db.dat
+conf/database.db.dir
+conf/settings.cfg
 
 .vscode/
 
@@ -17,7 +21,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-nzbtomedia/
+nzbtomedia/autoProcessMedia.cfg
 env/
 build/
 develop-eggs/
@@ -38,7 +42,6 @@ var/
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
-*.spec
 
 # PIP
 pip-log.txt
