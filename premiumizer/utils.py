@@ -38,8 +38,7 @@ def update():
     logging.debug('def restart')
     del sys.argv[1:]
     time.sleep(2)
-    logging.info('Git pull nzbtomedia & premiumizer')
-    subprocess.call(['git', '-C', os.path.join(rootdir, 'nzbtomedia'), 'pull'])
+    logging.info('Git pull premiumizer')
     subprocess.call(['git', '-C', rootdir, 'pull'])
     prem_config = configparser.ConfigParser()
     default_config = configparser.ConfigParser()

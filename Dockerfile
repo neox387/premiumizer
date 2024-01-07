@@ -1,4 +1,6 @@
-FROM python:3.12.1-alpine3.19
+FROM python:3.11.7-alpine3.19
+LABEL build_version="Premiumizer version:- ${VERSION} Build-date:- ${BUILD_DATE}"
+LABEL maintainer="neox387"
 
 WORKDIR /app
 COPY requirements.txt requirements.txt

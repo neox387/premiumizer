@@ -3,8 +3,8 @@ server_port = 5000
 bind_ip = 0.0.0.0
 reverse_proxy_path =
 custom_domain =
-active_interval = 3
-idle_interval = 300
+active_interval = 10
+idle_interval = 600
 debug_enabled = 0
 
 [security]
