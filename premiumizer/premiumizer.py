@@ -1604,7 +1604,8 @@ def download_task(task):
         task.update(progress=100)
         gevent.sleep(3)
         try:
-            shutil.rmtree(task.dldir)
+            if not task.dldir == get_cat_var(task.category):
+                shutil.rmtree(task.dldir)
         except:
             if not cfg.jd_enabled:
                 logger.warning('Could not delete folder for: %s', greenlet.task.name)
