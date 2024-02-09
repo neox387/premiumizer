@@ -1604,7 +1604,7 @@ def download_task(task):
         task.update(progress=100)
         gevent.sleep(3)
         try:
-            if not task.dldir == get_cat_var(task.category):
+            if not task.dldir == get_cat_var(task.category)[0]:
                 shutil.rmtree(task.dldir)
         except:
             if not cfg.jd_enabled:
