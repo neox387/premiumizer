@@ -1246,15 +1246,23 @@ def get_download_stats_jd(package_name, package_ids):
                     tmp_total_progress = round(float(package['bytesLoaded']) * 100 / package["bytesTotal"], 1)
                 try:
                     total_speed[count] = speed
-                    total_eta[count] = eta
-                    total_progress[count] = tmp_total_progress
-                    total_bytesloaded[count] = package['bytesLoaded']
-                    total_bytestotal[count] = bytestotal
                 except:
                     total_speed.append(speed)
+                try:
+                    total_eta[count] = eta
+                except:
                     total_eta.append(eta)
+                try:
+                    total_progress[count] = tmp_total_progress
+                except:
                     total_progress.append(tmp_total_progress)
+                try:
+                    total_bytesloaded[count] = package['bytesLoaded']
+                except:
                     total_bytesloaded.append(package['bytesLoaded'])
+                try:
+                    total_bytestotal[count] = bytestotal
+                except:
                     total_bytestotal.append(bytestotal)
             while 'Extracting' in package['status']:
                 try:
@@ -1452,6 +1460,7 @@ def download_file():
                     greenlet.task.update(dltime=greenlet.task.dltime + dltime)
 
         else:
+            download['download_ok'] = False
             logger.info('File not downloaded it already exists at: %s', download['combined_path'])
 
     if cfg.jd_enabled and files_downloaded:
