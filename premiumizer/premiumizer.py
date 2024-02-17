@@ -1489,6 +1489,7 @@ def download_file():
                         [{"assignJobID": True, "autostart": True, "links": url,
                           "packageName": package_name,
                           "destinationFolder": (download['path']),
+                          "deepDecrypt": True,
                           "overwritePackagizerRules": True}])
 #                   package_ids.append(str(jd_jobid['id']))
                 except BaseException as e:
