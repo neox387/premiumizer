@@ -28,24 +28,27 @@ When enabled, premiumizer can inform nzbToMedia whenever the local download is f
 By default, premiumizer's web interface listens on port 5000.
 When premiumizer is running you can access it at http://localhost:5000/
 
-## Installation using Docker
-
-We have provide images for `amd64` & `arm64v8`. If you have a different architecture, you can build this yourself using our Dockerfile.
+## Installation using Docker Compose (recommended)
 
 You need to set the correct PUID and PGID equal to the user that has rw access to the mounted volumes.
 
 ```shell
-docker run \
-  --name premiumizer \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Europe/London \
-  -p 5000:5000 \
-  -v /path/to/conf:/conf \
-  -v /path/to/blackhole:/blackhole \
-  -v /path/to/downloads:/downloads \
-  --restart unless-stopped \
-  neox387/premiumizer
+services:
+  premiumizer:
+    container_name: premiumizer
+    image: neox387/premiumizer
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    volumes:
+      - ./conf:/conf
+      - /path/to/downloads:/downloads
+      - /path/to/blackhole:/blackhole
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+
 ```
 
 ### Synology DSM

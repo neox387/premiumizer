@@ -151,10 +151,10 @@
 
 {% block js_footer %}
     {{ super() }}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.4/socket.io.js"
-        integrity="sha512-tE1z+95+lMCGwy+9PnKgUSIeHhvioC9lMlI7rLWU0Ps3XTdjRygLcy4mLuL0JAoK4TLdQEyP0yOl/9dMOqpH/Q=="
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"
+        integrity="sha512-11t8Q+vY9JlCrr+PveZKTYJq8n7O09Y5X/pk/aMd3vJugSvu4xOunGEUzaADqL3I8cZKE/pBwwCfXzDkRJh2sQ=="
         crossorigin="anonymous"
-        referrerpolicy="no-referrer">
+        referrerpolicy="no-referrer"></script>
 </script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/control.js') }}?v=23"></script>
 {% endblock %}
