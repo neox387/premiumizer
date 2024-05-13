@@ -1530,16 +1530,16 @@ def process_dir(dir_content, path):
             subdir_content = json.loads(r.content)['content']
             process_dir(subdir_content, subdir_path)
         elif type == 'file':
-            if greenlet.task.dlext_blacklist:
-                if greenlet.task.dlext[0] == '' or x['link'].lower().endswith(tuple(greenlet.task.dlext)):
-                    download_file_continue = 1
-                else:
+            if x['link'].lower().endswith(tuple(greenlet.task.dlext)):
+                if greenlet.task.dlext_blacklist:
                     logger.debug('Skipping download of file %s because extension is blacklisted', x['name'])
-            else:
-                if x['link'].lower().endswith(tuple(greenlet.task.dlext)):
-                    download_file_continue = 1
                 else:
+                    download_file_continue = 1
+            else:
+                if not greenlet.task.dlext_blacklist:
                     logger.debug('Skipping download of file %s because extension is not whitelisted', x['name'])
+                    continue
+                download_file_continue = 1
             if download_file_continue:
                 if greenlet.task.delsample:
                     sample = is_sample(x)
