@@ -39,7 +39,7 @@ from flask_login import (LoginManager, UserMixin, login_required, login_user,
                          logout_user)
 from flask_socketio import SocketIO, emit
 from gevent import local
-from pySmartDL import SmartDL, utils
+from pysmartdl2 import SmartDL, utils
 from watchdog import events
 from watchdog.observers import Observer
 from werkzeug.utils import secure_filename
