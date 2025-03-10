@@ -17,7 +17,7 @@ import urllib.parse
 import urllib.request
 import uuid
 import xmlrpc.client
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from logging.handlers import RotatingFileHandler
@@ -990,7 +990,7 @@ def send_notification(subject, text=None, send_email=cfg.email_enabled, send_pus
         msg['Subject'] = subject
         msg['From'] = cfg.email_from
         msg['To'] = cfg.email_to
-        msg['Date'] = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S +0000")
+        msg['Date'] = datetime.now(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S +0000")
         msg['X-Application'] = 'Premiumizer'
         msg.attach(MIMEText(text, 'plain'))
         # Send message
