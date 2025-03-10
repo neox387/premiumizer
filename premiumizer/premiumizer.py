@@ -1502,7 +1502,7 @@ def download_file():
 
 def is_sample(dir_content):
     media_extensions = [".mkv", ".avi", ".divx", ".xvid", ".mov", ".wmv", ".mp4", ".mpg", ".mpeg", ".vob", ".iso"]
-    media_size = 150 * 1024 * 1024
+    media_size = 500 * 1024 * 1024
     if dir_content['size'] < media_size:
         if dir_content['link'].lower().endswith(tuple(media_extensions)):
             if ('sample' or 'rarbg.com' in dir_content['url'].lower()) and (
